@@ -1,0 +1,16 @@
+[
+{
+  "modid": "hdm",
+  "name": "HuntedDeathMessages",
+  "description": "Wynncraft Utility mod change death messages.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["OriTheSpirit"],
+  "credits": "OriTheSpirit for making the mod, FML guys and Forge for making this.",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
