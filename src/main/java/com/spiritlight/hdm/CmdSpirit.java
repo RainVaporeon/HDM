@@ -60,6 +60,15 @@ public class CmdSpirit extends CommandBase {
                 case "list":
                     list(sender);
                     break;
+                case "format":
+                    sender.sendMessage(new TextComponentString(HDM.prefix + "Custom Message Formatting (For all messages)"));
+                    sender.sendMessage(new TextComponentString(HDM.prefix + "{name}: Player name"));
+                    sender.sendMessage(new TextComponentString(HDM.prefix + "{NAME}: Text coloring"));
+                    sender.sendMessage(new TextComponentString(HDM.prefix + "§4DARK_RED §cRED §6GOLD §eYELLOW §2DARK_GREEN"));
+                    sender.sendMessage(new TextComponentString(HDM.prefix + "§aGREEN §bAQUA §3DARK_AQUA §1DARK_BLUE §9BLUE"));
+                    sender.sendMessage(new TextComponentString(HDM.prefix + "§dLIGHT_PURPLE §5DARK_PURPLE §fWHITE §7GRAY §8DARK_GRAY"));
+                    sender.sendMessage(new TextComponentString(HDM.prefix + "§0BLACK §rRESET §lBOLD §mSTRIKE §nUNDERLINE §oITALIC"));
+                    break;
                 default:
                     sender.sendMessage(new TextComponentString(HDM.prefix + " You need to supply something."));
                     break;

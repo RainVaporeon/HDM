@@ -25,7 +25,7 @@ public class MsgEventSpirit {
                 // don't care didnt ask
             }
             // Message prefix added with dark red modifier
-            String deathMessage = "§4" + HDM.customMessages.get(random.nextInt(HDM.customMessages.size()));
+            String deathMessage = "§6" + HDM.customMessages.get(random.nextInt(HDM.customMessages.size()));
             // Declare initial types
             TextComponentString text;
             Style style;
