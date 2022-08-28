@@ -24,7 +24,7 @@ public class MsgEventSpirit {
             } catch (NullPointerException|IndexOutOfBoundsException ignored) {
                 // don't care didnt ask
             }
-            // Message prefix added with dark red modifier
+            // Message prefix added with gold modifier
             String deathMessage = "§6" + HDM.customMessages.get(random.nextInt(HDM.customMessages.size()));
             // Declare initial types
             TextComponentString text;

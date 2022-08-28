@@ -1,5 +1,6 @@
 package com.spiritlight.hdm;
 
+import com.google.gson.*;
 import net.minecraft.command.CommandBase;
 // import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -10,6 +11,8 @@ import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
+import java.awt.datatransfer.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +20,7 @@ import java.util.LinkedHashSet;
 
 public class CmdSpirit extends CommandBase {
     Style style;
+    private String clipboardContent;
 
     @Override
     public @NotNull String getName() {
@@ -69,11 +73,72 @@ public class CmdSpirit extends CommandBase {
                     sender.sendMessage(new TextComponentString(HDM.prefix + "§dLIGHT_PURPLE §5DARK_PURPLE §fWHITE §7GRAY §8DARK_GRAY"));
                     sender.sendMessage(new TextComponentString(HDM.prefix + "§0BLACK §rRESET §lBOLD §mSTRIKE §nUNDERLINE §oITALIC"));
                     break;
+                case "import":
+                    sender.sendMessage(new TextComponentString(HDM.prefix + " Importing..."));
+                    _import(sender);
+                    break;
+                case "export":
+                    sender.sendMessage(new TextComponentString(HDM.prefix + " Exporting..."));
+                    export(sender);
+                    break;
+                case "exportCopy":
+                    if(clipboardContent.isEmpty()) return;
+                    copyToClipboard(clipboardContent);
+                    sender.sendMessage(new TextComponentString(HDM.prefix + " OK! Exported content to your clipboard."));
+                    break;
                 default:
                     sender.sendMessage(new TextComponentString(HDM.prefix + " You need to supply something."));
                     break;
             }
         }
+    }
+
+    private void _import(ICommandSender sender) {
+        String result;
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        Transferable contents = clipboard.getContents(null);
+        boolean hasStringText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+        if (hasStringText) {
+            try {
+                result = (String) contents.getTransferData(DataFlavor.stringFlavor);
+            } catch (UnsupportedFlavorException | IOException ex) {
+                ex.printStackTrace();
+                sender.sendMessage(new TextComponentString(HDM.prefix + " Unable to import. Is your clipboard empty?"));
+                return;
+            }
+        } else {
+            sender.sendMessage(new TextComponentString(HDM.prefix + " Unable to import. Is your clipboard empty?"));
+            return;
+        }
+        JsonArray object;
+        try {
+            object = new Gson().fromJson(result, JsonArray.class);
+        } catch (JsonSyntaxException e) {
+            sender.sendMessage(new TextComponentString(HDM.prefix + " Invalid importing! Is your clipboard content correct?"));
+            return;
+        }
+        for(JsonElement element : object) {
+            HDM.customMessages.add(element.toString());
+        }
+        messageDeDupe();
+        sender.sendMessage(new TextComponentString(HDM.prefix + " OK! Imported" + object.size() + " messages and de-duped potentially existing ones."));
+    }
+
+    private void export(ICommandSender sender) {
+        JsonArray content = new JsonArray();
+        for(String s : HDM.customMessages) {
+            content.add(s);
+        }
+        Style style = new Style().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString("Click to copy!")))
+                .setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hdm exportCopy"));
+        clipboardContent = content.toString();
+        sender.sendMessage(new TextComponentString(HDM.prefix + " Exported data! Click here to copy to clipboard.").setStyle(style));
+    }
+
+    private void copyToClipboard(String s) {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        StringSelection selection = new StringSelection(s);
+        clipboard.setContents(selection, null);
     }
 
     // cc §
