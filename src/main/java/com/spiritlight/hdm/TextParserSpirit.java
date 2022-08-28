@@ -8,7 +8,7 @@ public class TextParserSpirit {
         public static String parseString(String s, @Nullable String name) {
             // Still will parse ${mob} separately.
             if(Objects.equals(name, null))
-                name = "";
+                name = "[player]";
             return s.replace("{BLACK}", "§0")
                     .replace("{DARK_BLUE}", "§1")
                     .replace("{DARK_GREEN}", "§2")

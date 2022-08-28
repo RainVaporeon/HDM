@@ -164,10 +164,11 @@ public class CmdSpirit extends CommandBase {
         try {
             index = Integer.parseInt(s);
         } catch (NumberFormatException ignored) {}
-        if (HDM.customMessages.contains(s) || index != -1 && HDM.customMessages.size() > index) {
+        // Ensure content exists and that the index specified is not out of bounds
+        if (HDM.customMessages.contains(s) || (index >= 0 && HDM.customMessages.size() > index)) {
             revertChangeStr = HDM.customMessages.get(index); // index is ensured to be within bounds
             sender.sendMessage(textFormat(HDM.prefix + " §bRemoved message §b" + s + "!", "HYBRID", "§6Click to revert this change!", "/hdm add " + revertChangeStr));
-            HDM.customMessages.removeIf(str -> str.toLowerCase(Locale.ROOT).equals(revertChangeStr));
+            HDM.customMessages.removeIf(str -> str.toLowerCase(Locale.ROOT).equals(revertChangeStr.toLowerCase(Locale.ROOT)));
             refreshConfig();
         } else {
             sender.sendMessage(new TextComponentString(HDM.prefix + " §cThis message does not exist."));
@@ -190,11 +191,10 @@ public class CmdSpirit extends CommandBase {
     }
 
     private TextComponentString textFormat(String str, String modificationType, String action, String extra) {
-        String xaction = TextParserSpirit.parseString(action, null);
-        TextComponentString s = new TextComponentString(TextParserSpirit.parseString(str, extra));
+        TextComponentString s = new TextComponentString(TextParserSpirit.parseString(str, null));
         switch (modificationType) {
             case "SHOW_TEXT":
-                style = s.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString(xaction)));
+                style = s.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString(action)));
                 return s;
             case "RUN_COMMAND":
                 style = s.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, action));
