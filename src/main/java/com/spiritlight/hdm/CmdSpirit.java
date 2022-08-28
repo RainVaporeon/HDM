@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 
 public class CmdSpirit extends CommandBase {
     Style style;
@@ -118,10 +119,10 @@ public class CmdSpirit extends CommandBase {
             return;
         }
         for(JsonElement element : object) {
-            HDM.customMessages.add(element.toString());
+            HDM.customMessages.add(element.toString().replace("\"", "").replace("\\", ""));
         }
         messageDeDupe();
-        sender.sendMessage(new TextComponentString(HDM.prefix + " OK! Imported" + object.size() + " messages and de-duped potentially existing ones."));
+        sender.sendMessage(new TextComponentString(HDM.prefix + " OK! Imported " + object.size() + " messages and de-duped potentially existing ones."));
     }
 
     private void export(ICommandSender sender) {
@@ -154,18 +155,19 @@ public class CmdSpirit extends CommandBase {
         messageDeDupe();
     }
 
+
+    // s serves as both a String literal, or an integer indicating the position to remove
     private void remove(String s, ICommandSender sender) {
+        String revertChangeStr;
         // add player to list
         int index = -1;
         try {
             index = Integer.parseInt(s);
         } catch (NumberFormatException ignored) {}
-        if (HDM.customMessages.contains(s) || (index != -1 && HDM.customMessages.size() >= index)) {
-            sender.sendMessage(textFormat(HDM.prefix + " §bRemoved message §b" + s + "!", "HYBRID", "§6Click to revert this change!", "/hdm add " + s));
-            if(index != -1) {
-                HDM.customMessages.remove(HDM.customMessages.get(index));
-            } else
-            HDM.customMessages.remove(s);
+        if (HDM.customMessages.contains(s) || index != -1 && HDM.customMessages.size() > index) {
+            revertChangeStr = HDM.customMessages.get(index); // index is ensured to be within bounds
+            sender.sendMessage(textFormat(HDM.prefix + " §bRemoved message §b" + s + "!", "HYBRID", "§6Click to revert this change!", "/hdm add " + revertChangeStr));
+            HDM.customMessages.removeIf(str -> str.toLowerCase(Locale.ROOT).equals(revertChangeStr));
             refreshConfig();
         } else {
             sender.sendMessage(new TextComponentString(HDM.prefix + " §cThis message does not exist."));
@@ -198,7 +200,7 @@ public class CmdSpirit extends CommandBase {
                 style = s.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, action));
                 return s;
             case "HYBRID":
-                style = s.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString(TextParserSpirit.parseString(action, null))));
+                style = s.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString(action)));
                 style = s.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, extra));
                 return s;
             default:

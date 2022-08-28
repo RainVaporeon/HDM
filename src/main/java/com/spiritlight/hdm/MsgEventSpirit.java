@@ -10,6 +10,7 @@ public class MsgEventSpirit {
     private static final Random random = new Random();
     @SubscribeEvent
     public void onMessage(ClientChatReceivedEvent event) {
+        if(HDM.customMessages.size() == 0) return; // Not edit messages
         // Split messages
         // String[] message = event.getMessage().getUnformattedText().split(" "); //Message Array
         int index = match(event.getMessage().getUnformattedText());
